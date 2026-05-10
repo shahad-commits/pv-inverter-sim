@@ -232,11 +232,10 @@ At each sampling instant (dt = 0.05 s), the algorithm compares the power before 
 > if ΔP > 0:   V_ref += δV · sign(ΔV)
 > else:        V_ref −= δV · sign(ΔV)
 
-**Steady-state oscillation:** The algorithm never stops perturbing, creating a ±δV limit cycle around V_mpp. The associated power loss is approximately:
+**Steady-state oscillation:** The algorithm never stops perturbing, creating a ±δV limit cycle around V_mpp.. the associated power loss from a quadratic P-V approximation gives:
 
-> **Δη_P&O ≈ ½·(δV/V_mpp)² ≈ ½·(0.5/29.48)² = 0.14 %**
-
-This matches the measured η = 99.86 % (implying 0.14 % loss).
+Δη_P&O ≈ ½·(δV/V_mpp)² ≈ ½·(0.5/29.48)² = 0.014 %
+The measured η = 99.86 % implies a 0.14 % loss which is ten times larger than the quadratic estimate. The discrepancy arises because the actual P-V curve has significantly steeper curvature at the MPP than a parabola: measured directly, the average power at V_mpp ± 0.5 V is 0.234 % below P_mpp. The formula gives a lower bound; the 0.09 pp advantage of InCond over P&O on the step profile reflects this real IV-curve-curvature effect.
 
 #### 3.3.3 Incremental Conductance (InCond)
 
