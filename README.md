@@ -13,7 +13,7 @@
   - [2.1 Conversion Chain Topology](#21-conversion-chain-topology)
   - [2.2 Operating Conditions](#22-operating-conditions)
 - [3. Mathematical Foundations](#3-mathematical-foundations)
-  - [3.1 PV Panel — Single-Diode Equivalent Circuit](#31-pv-panel--single-diode-equivalent-circuit)
+  - [3.1 PV Panel  Single-Diode Equivalent Circuit](#31-pv-panel--single-diode-equivalent-circuit)
   - [3.2 Boost DC-DC Converter](#32-boost-dc-dc-converter)
   - [3.3 Maximum Power Point Tracking](#33-maximum-power-point-tracking)
   - [3.4 H-Bridge Inverter and SPWM Modulation](#34-h-bridge-inverter-and-spwm-modulation)
@@ -53,10 +53,10 @@ Both environments are cross-validated against each other and against analytical 
 | V_rms output | 230.45 V | **230.0 V** | 230 V nominal |
 | P_out | 240.63 W | **238.6 W** | ~240 W |
 | THD (filtered) | 1.02% | **1.08%** | < 5 % (IEEE 1547) |
-| V_dc (boost) | — | **400.3 V** | 400 V |
-| System η | — | **98.35%** | > 96 % |
-| MPPT η (P&O) | **99.86%** | — | > 99 % |
-| MPPT η (InCond) | **99.95%** | — | > 99 % |
+| V_dc (boost) |  | **400.3 V** | 400 V |
+| System η |  | **98.35%** | > 96 % |
+| MPPT η (P&O) | **99.86%** |  | > 99 % |
+| MPPT η (InCond) | **99.95%** |  | > 99 % |
 
 > **Why does Simulink show higher THD (1.08% vs 1.02%)?**
 > The Simulink model implements 2 µs switch dead-time that the Python simulation omits. Dead-time adds low-order odd harmonics (principally 3rd and 5th) with a theoretical upper-bound contribution of ≈ 4·t_dead·f_sw / (π·M_a) = 3.1 % before LC attenuation. H3 (150 Hz) and H5 (250 Hz) are below the filter corner (f_c = 1 kHz) so they pass with near-unity gain; the net dead-time contribution is ≈ 0.06 percentage points, matching the 0.06 pp gap observed (1.08 % − 1.02 %). Both values comply with the 5 % limit: Simulink 4.6× margin, Python 4.9× margin.
@@ -71,7 +71,7 @@ Both environments are cross-validated against each other and against analytical 
 ### 2.1 Conversion Chain Topology
 
 Power flows through four sequential conversion stages.
-The MPPT algorithm is a **control layer** that adjusts the boost duty cycle — it is not a power stage in its own right.
+The MPPT algorithm is a **control layer** that adjusts the boost duty cycle  it is not a power stage in its own right.
 
 **Signal conventions:**
 - At T = 35 °C, G = 1000 W/m²: V_mpp = 29.48 V, I_mpp = 8.13 A, P_pv = 239.7 W *(operating condition, not STC)*
@@ -93,7 +93,7 @@ The temperature shift from 25 °C to 35 °C reduces V_mpp by approximately 1.19 
 
 ## 3. Mathematical Foundations
 
-### 3.1 PV Panel — Single-Diode Equivalent Circuit
+### 3.1 PV Panel, Single-Diode Equivalent Circuit
 
 #### 3.1.1 Governing Equation
 
@@ -105,15 +105,15 @@ The single-diode model (Villalva et al., 2009) represents a PV cell as a photocu
 |---|---|---|
 | I_ph | irradiance-scaled | Photogenerated current [A] |
 | I₀ | T-dependent | Diode saturation current [A] |
-| R_s | 0.274 Ω | Series resistance (contacts, wiring) — Villalva-fitted, 4.6 mΩ/cell × 60 cells |
-| R_sh | 415 Ω | Shunt resistance (leakage paths) — Villalva-fitted |
+| R_s | 0.274 Ω | Series resistance (contacts, wiring)  Villalva-fitted, 4.6 mΩ/cell × 60 cells |
+| R_sh | 415 Ω | Shunt resistance (leakage paths)  Villalva-fitted |
 | n | 1.10 | Diode ideality factor (fitted) |
 | V_T | n·N_s·k·T/q | Thermal voltage (N_s = 60 cells in series) |
 | E_g | 1.121 eV | Silicon bandgap energy (for I₀ temperature scaling) |
 
 > **Note on R_s and R_sh:** These are phenomenological curve-fit parameters from the Villalva iterative method. They are not independently measurable physical quantities but absorb all second-order effects (cell interconnect resistance, distributed mismatch, temperature gradients) so that the single-diode model reproduces the correct I_sc, V_oc, and P_mp at STC. R_s = 0.274 Ω corresponds to 4.6 mΩ/cell, within the physical range of 3–10 mΩ/cell for crystalline silicon.
 
-The equation is **implicit in I** — it cannot be inverted analytically.
+The equation is **implicit in I**, it cannot be inverted analytically.
 
 #### 3.1.2 Irradiance and Temperature Scaling
 
@@ -129,7 +129,7 @@ where I₀,STC is computed at construction from the open-circuit condition (incl
 
 > **I₀,STC = (I_ph,STC − V_oc,STC/R_sh) / [exp(V_oc,STC / V_T,STC) − 1]**
 
-This correctly captures the exponential increase of dark current with temperature and produces the logarithmic V_oc(G) dependence directly from the diode equation — no separate V_oc temperature-shift formula is required. Raising T by 10 K drops V_mpp ≈ 1.2 V and P_mpp ≈ 4.2 %, consistent with the simulation values (250.2 W → 239.7 W).
+This correctly captures the exponential increase of dark current with temperature and produces the logarithmic V_oc(G) dependence directly from the diode equation  no separate V_oc temperature-shift formula is required. Raising T by 10 K drops V_mpp ≈ 1.2 V and P_mpp ≈ 4.2 %, consistent with the simulation values (250.2 W → 239.7 W).
 
 #### 3.1.3 Maximum Power Point via Golden-Section Search
 
@@ -146,25 +146,27 @@ V_mpp, I_mpp = result.x, self.current(result.x, G, T_cell)
 
 Each I(V) evaluation uses Brent's root-finding on the implicit residual equation, with bracket [−I_ph·0.02, I_ph·1.05] and exponent clipping to [−500, 500] for numerical stability. The lower bracket of −I_ph·0.02 (rather than −0.01 A) ensures a valid sign change even near V_oc where the shunt current can make a fixed −0.01 A bracket fail.
 
-#### 3.1.4 PV Characteristics — Figure 1
+#### 3.1.4 PV Characteristics, Figure 1
+<a id="fig1"></a>
+<img width="3567" height="1530" alt="fig01_pv_iv_curves" src="https://github.com/user-attachments/assets/8851a40e-c89d-4715-ab12-1aa47f92fc90" />
 
-<img width="3567" height="1530" alt="fig01_pv_iv_curves" src="https://github.com/user-attachments/assets/47263eec-0961-492c-8f80-427f23bbce6e" />
 
 > **→ Figure 1: `fig01_pv_iv_curves.png`**
-> *Left — I-V family (G ∈ {200, 400, 600, 800, 1000} W/m², T = 25 °C). Right — P-V curves with MPP locus.*
+> *Left  I-V family (G ∈ {200, 400, 600, 800, 1000} W/m², T = 25 °C). Right  P-V curves with MPP locus.*
 
 **Reading Figure 1:**
-The I-V curves exhibit the three classic regions: the flat current-source region where I ≈ I_ph ∝ G, the diode knee near V_oc, and the steep voltage-source drop-off. The orange MPP locus tracks nearly horizontally across all irradiance levels — V_mpp changes by approximately 1.1 V across the five curves (29.6 V at G = 200 to 30.7 V at G = 800 W/m², with a slight rollback at G = 1000 W/m² due to I²·R_s compression at high currents). This confirms that voltage is primarily a logarithmic function of irradiance while current scales linearly. The unimodal maxima is shown, which is a prerequisite for the hill-climbing MPPT algorithms to converge globally. Quantitative check: P_mpp at G = 1000 W/m², T = 25 °C reads 250.2 W against the 250 W datasheet rating (< 0.1 % error).
+The I-V curves exhibit the three classic regions: the flat current-source region where I ≈ I_ph ∝ G, the diode knee near V_oc, and the steep voltage-source drop-off. The orange MPP locus tracks nearly horizontally across all irradiance levels  V_mpp changes by approximately 1.1 V across the five curves (29.6 V at G = 200 to 30.7 V at G = 800 W/m², with a slight rollback at G = 1000 W/m² due to I²·R_s compression at high currents). This confirms that voltage is primarily a logarithmic function of irradiance while current scales linearly. The unimodal maxima is shown, which is a prerequisite for the hill-climbing MPPT algorithms to converge globally. Quantitative check: P_mpp at G = 1000 W/m², T = 25 °C reads 250.2 W against the 250 W datasheet rating (< 0.1 % error).
 
-#### 3.1.5 MPP Locus — Figure 2
+#### 3.1.5 MPP Locus  Figure 2
+<a id="fig2"></a>
+<img width="3268" height="1530" alt="fig02_mpp_locus" src="https://github.com/user-attachments/assets/30669705-7cf6-496d-82f3-aa115a356043" />
 
-<img width="3268" height="1530" alt="fig02_mpp_locus" src="https://github.com/user-attachments/assets/6ea794b5-d8ba-461c-bdde-f9fb918c5c81" />
 
 > **→ Figure 2: `fig02_mpp_locus.png`**
-> *Left — V_mpp vs G at T = 25 °C and T = 35 °C. Right — P_mpp vs G at both temperatures. Operating point (G = 1000 W/m², T = 35 °C) annotated on both panels.*
+> *Left  V_mpp vs G at T = 25 °C and T = 35 °C. Right  P_mpp vs G at both temperatures. Operating point (G = 1000 W/m², T = 35 °C) annotated on both panels.*
 
 **Reading Figure 2:**
-V_mpp rises with irradiance (logarithmic dependence via I_sc scaling) then rolls back slightly above G ≈ 800 W/m² due to I²·R_s compression — this is physically correct and visible as the peak then slight dip in both temperature curves. The T = 35 °C curve sits uniformly ~1.19 V below the T = 25 °C curve across all irradiance levels, consistent with the bandgap-model temperature effect. P_mpp scales near-linearly with G on both curves; the ~4.2 % drop per 10 K (μ_Pmp · ΔT) produces the separation between the STC and operating-condition lines. The annotated marker confirms the simulation operating point: V_mpp = 29.48 V, P_mpp = 239.7 W at G = 1000 W/m², T = 35 °C.
+V_mpp rises with irradiance (logarithmic dependence via I_sc scaling) then rolls back slightly above G ≈ 800 W/m² due to I²·R_s compression  this is physically correct and visible as the peak then slight dip in both temperature curves. The T = 35 °C curve sits uniformly ~1.19 V below the T = 25 °C curve across all irradiance levels, consistent with the bandgap-model temperature effect. P_mpp scales near-linearly with G on both curves; the ~4.2 % drop per 10 K (μ_Pmp · ΔT) produces the separation between the STC and operating-condition lines. The annotated marker confirms the simulation operating point: V_mpp = 29.48 V, P_mpp = 239.7 W at G = 1000 W/m², T = 35 °C.
 
 ---
 
@@ -204,15 +206,16 @@ The primary loss mechanism is inductor copper loss:
 
 Additional losses (diode, MOSFET on-resistance) are captured in `boost_converter.efficiency()`. The combined model predicts η = 98.2 %, consistent with the terminal output (98.19 %). Note: the efficiency curve in Figure 5 is computed on a **constant-power locus** (I_in = P_mpp/V_in), which correctly reflects the panel operating condition at each V_in value.
 
-#### 3.2.4 Boost Characteristics — Figure 5
+#### 3.2.4 Boost Characteristics  Figure 5
+<a id="fig5"></a>
+<img width="4166" height="1319" alt="fig05_boost_characteristics" src="https://github.com/user-attachments/assets/4fc8aab5-3839-4109-b878-ecf6eefa3f58" />
 
-<img width="4166" height="1319" alt="fig05_boost_characteristics" src="https://github.com/user-attachments/assets/aeb446ad-d66f-4d5b-a4bd-54389b50e128" />
 
 > **→ Figure 5: `fig05_boost_characteristics.png`**
-> *Left — Duty cycle D vs V_in. Centre — Efficiency η vs V_in (constant-power locus, P = 240 W). Right — Inductor current ripple ΔI_L vs V_in.*
+> *Left  Duty cycle D vs V_in. Centre  Efficiency η vs V_in (constant-power locus, P = 240 W). Right  Inductor current ripple ΔI_L vs V_in.*
 
 **Reading Figure 5:**
-The duty cycle curve decreases from 95 % at V_in ≈ 21 V (at lower voltages D is clamped at 95 %, outside the panel's operating range) to ≈ 89 % at V_in = 45 V, with a dashed marker at V_mpp = 29.48 V confirming D ≈ 92.6 %. Efficiency increases monotonically with V_in because I_in = P/V_in decreases, reducing all conduction losses. The ripple panel shows ΔI_L ∝ V_in (linear, as predicted by the ripple formula), reaching 0.683 A at the operating point — 8.4 % of rated current, well within the 15 % design specification.
+The duty cycle curve decreases from 95 % at V_in ≈ 21 V (at lower voltages D is clamped at 95 %, outside the panel's operating range) to ≈ 89 % at V_in = 45 V, with a dashed marker at V_mpp = 29.48 V confirming D ≈ 92.6 %. Efficiency increases monotonically with V_in because I_in = P/V_in decreases, reducing all conduction losses. The ripple panel shows ΔI_L ∝ V_in (linear, as predicted by the ripple formula), reaching 0.683 A at the operating point  8.4 % of rated current, well within the 15 % design specification.
 
 ---
 
@@ -243,9 +246,10 @@ The condition dP/dV = 0 at the MPP yields a conductance criterion:
 
 The algorithm perturbs only when the incremental conductance dI/dV departs from the instantaneous conductance −I/V by more than a tolerance ε = 0.01 A/V. When exactly at the MPP it stops perturbing, eliminating the steady-state oscillation present in P&O. This explains the higher η = 99.95 % under stable irradiance and faster recovery during cloud shadows.
 
-#### 3.3.4 MPPT Benchmarks — Figures 3 and 4
+#### 3.3.4 MPPT Benchmarks  Figures 3 and 4
+<a id="fig3"></a>
+<img width="3016" height="2082" alt="fig03_mppt_step" src="https://github.com/user-attachments/assets/bd668a74-4502-48d0-8e3d-bd6cc346e261" />
 
-<img width="3016" height="2082" alt="fig03_mppt_step" src="https://github.com/user-attachments/assets/fed033b6-14b0-4986-a122-c16dbf804aa2" />
 
 > **→ Figure 3: `fig03_mppt_step.png`**
 > *Three-panel: (top) stepped irradiance profile; (middle) P_actual vs P_MPP for P&O and InCond; (bottom) normalised tracking error.*
@@ -253,7 +257,8 @@ The algorithm perturbs only when the incremental conductance dI/dV departs from 
 **Reading Figure 3:**
 The stepped profile (200 → 600 → 1000 → 800 → 400 → 1000 W/m²) creates sharp power transitions. The P_MPP theoretical reference (green dashed) is plotted on top of the algorithm traces, confirming both converge to within the P&O oscillation band. Settling time after each step is ≈ 0.3–0.5 s for both algorithms. The overall and steady-state efficiencies are 99.86 %/99.86 % (P&O) and 99.95 %/99.96 % (InCond). InCond outperforms P&O by 0.09 percentage points overall on this profile.
 
-<img width="2995" height="2082" alt="fig04_mppt_cloudy" src="https://github.com/user-attachments/assets/a018b8cd-e88e-4483-9cc9-f94775c4fa64" />
+<a id="fig4"></a>
+<img width="2995" height="2082" alt="fig04_mppt_cloudy" src="https://github.com/user-attachments/assets/a8f93ddf-9b1c-45f6-9b9b-eb967e0c3ff1" />
 
 > **→ Figure 4: `fig04_mppt_cloudy.png`**
 > *Three-panel: realistic partial-cloud profile with Gaussian dips; tracking comparison; tracking error.*
@@ -275,7 +280,7 @@ where the reference r(t) = M_a·sin(2π·f_g·t) and the carrier c(t) is a trian
 
 > **V_AB(t) = (S_A − S_B) · V_dc ∈ {−400, 0, +400} V**
 
-**Key unipolar property:** All harmonic energy appears at sidebands of **2·f_sw = 20 kHz** (the first harmonic cluster is at 2·f_sw ± n·f_grid, i.e., H397–H401 in the 50 Hz harmonic numbering scheme). This explains why the unfiltered THD = 41.75 % lives entirely outside the H1–H30 range — it is not a filter design failure but the mathematical property of unipolar modulation. The LC filter removes this 20 kHz cluster; residual low-order harmonics (H3–H29, totalling ~1 %) are caused by inverter switching-edge quantisation at the 1 µs time step.
+**Key unipolar property:** All harmonic energy appears at sidebands of **2·f_sw = 20 kHz** (the first harmonic cluster is at 2·f_sw ± n·f_grid, i.e., H397–H401 in the 50 Hz harmonic numbering scheme). This explains why the unfiltered THD = 41.75 % lives entirely outside the H1–H30 range  it is not a filter design failure but the mathematical property of unipolar modulation. The LC filter removes this 20 kHz cluster; residual low-order harmonics (H3–H29, totalling ~1 %) are caused by inverter switching-edge quantisation at the 1 µs time step.
 
 #### 3.4.2 Modulation Index and AC Output
 
@@ -297,15 +302,15 @@ Real gate drivers require a dead-time t_d = 2 µs between turning off one switch
 
 The LC filter provides no attenuation at 150 Hz or 250 Hz (both below f_c = 1 kHz). The actual dead-time contribution is ≈ 0.06 percentage points (1.08 % − 1.02 %), far below the 3.1 % bound because that bound assumes worst-case harmonic phase alignment across all switching cycles.
 
-#### 3.4.4 Inverter Waveforms — Figure 6
-
-<img width="3023" height="2082" alt="fig06_inverter_waveforms" src="https://github.com/user-attachments/assets/3ec29c3c-0ee8-4935-a6ad-3e17ac7ab384" />
+#### 3.4.4 Inverter Waveforms  Figure 6
+<a id="fig6"></a>
+<img width="3023" height="2082" alt="fig06_inverter_waveforms" src="https://github.com/user-attachments/assets/afa6f26b-bfad-4b3d-96a7-83b5986c268d" />
 
 > **→ Figure 6: `fig06_inverter_waveforms.png`**
 > *Three-panel: (top) V_AB and V_out vs time over 3 grid cycles with 2 ms zoom inset showing 3-level switching; (middle) inductor current I_L and output current I_out; (bottom) instantaneous power P(t).*
 
 **Reading Figure 6:**
-The top panel shows V_AB (violet) switching between ±400 V with a sinusoidal envelope — the pulse widths growing and shrinking at the 50 Hz grid rate confirms correct SPWM operation. The **2 ms zoom inset** in the upper right explicitly shows the three-level character: the signal dwells at 0 V near zero-crossings of the reference, and reaches ±400 V during peak half-cycles. At the full 60 ms view the individual 100 µs PWM pulses are compressed below pixel width and appear as a solid fill; the inset prevents misreading this as a 2-level square wave. V_out (light blue) is a clean 230 V RMS sinusoid with peak ≈ 325 V, demonstrating the LC filter's attenuation of the 20 kHz switching cluster. The middle panel shows I_L with its high-frequency ripple (unipolar SPWM doubles the effective ripple frequency to 20 kHz) superimposed on the sinusoidal envelope, and I_out is visually identical to I_L's envelope. The bottom panel shows instantaneous power P(t) = V_out·I_out oscillating at 100 Hz around P_avg ≈ 240.6 W.
+The top panel shows V_AB (violet) switching between ±400 V with a sinusoidal envelope  the pulse widths growing and shrinking at the 50 Hz grid rate confirms correct SPWM operation. The **2 ms zoom inset** in the upper right explicitly shows the three-level character: the signal dwells at 0 V near zero-crossings of the reference, and reaches ±400 V during peak half-cycles. At the full 60 ms view the individual 100 µs PWM pulses are compressed below pixel width and appear as a solid fill; the inset prevents misreading this as a 2-level square wave. V_out (light blue) is a clean 230 V RMS sinusoid with peak ≈ 325 V, demonstrating the LC filter's attenuation of the 20 kHz switching cluster. The middle panel shows I_L with its high-frequency ripple (unipolar SPWM doubles the effective ripple frequency to 20 kHz) superimposed on the sinusoidal envelope, and I_out is visually identical to I_L's envelope. The bottom panel shows instantaneous power P(t) = V_out·I_out oscillating at 100 Hz around P_avg ≈ 240.6 W.
 
 ---
 
@@ -341,19 +346,19 @@ Attenuation at f_sw = 10 kHz is exactly −40·log₁₀(f_sw/f_c) = −40·log�
 
 where Vₙ is the RMS amplitude of the nth harmonic and V₁ is the fundamental RMS. The Python analyser computes this from a windowed FFT of an integer number of grid cycles (20 cycles at dt = 1 µs, using a rectangular window for exact-cycle-aligned data to eliminate Hann sidelobe leakage), ensuring bin-exact harmonic extraction without spectral leakage.
 
-#### 3.5.4 Harmonic Spectrum — Figure 7
-
-<img width="3241" height="2135" alt="fig07_harmonic_spectrum" src="https://github.com/user-attachments/assets/0063fc91-1c6f-4e10-b487-ccb1333f2e0d" />
+#### 3.5.4 Harmonic Spectrum  Figure 7
+<a id="fig7"></a>
+<img width="3241" height="2135" alt="fig07_harmonic_spectrum" src="https://github.com/user-attachments/assets/c830cf3a-d087-45ea-91dc-3c502827840b" />
 
 > **→ Figure 7 (two panels): `fig07_harmonic_spectrum.png`**
-> *Top — Continuous log-frequency spectrum (50 Hz to 20 kHz) of V_AB and V_out; the 2·f_sw = 20 kHz switching cluster and the LC filter attenuation are both visible. Bottom — Low-order bar chart H2–H29 of filtered V_out showing residual harmonic compliance margin.*
+> *Top  Continuous log-frequency spectrum (50 Hz to 20 kHz) of V_AB and V_out; the 2·f_sw = 20 kHz switching cluster and the LC filter attenuation are both visible. Bottom  Low-order bar chart H2–H29 of filtered V_out showing residual harmonic compliance margin.*
 
 **Reading Figure 7:**
-The top panel tells the complete filtering story. Both V_AB (lavender) and V_out (blue) show the fundamental at 50 Hz at the same amplitude (~100% of V₁) — the filter passes the fundamental with near-unity gain. In the low-frequency region (50 Hz to 1 kHz), both spectra are nearly identical (0.06–0.23%) because the filter corner at 1 kHz provides little attenuation below it. The decisive difference is visible at **2·f_sw = 20 kHz**: the V_AB spectrum peaks sharply at H399 = 19 950 Hz (37.6% of V₁, annotated) and H397 = 19 850 Hz (17.9% of V₁) — these are the unipolar SPWM sidebands at 2·f_sw ± n·f_grid that carry the entire 41.75% unfiltered THD. V_out at these same frequencies is attenuated to the noise floor, confirming the LC filter provides its designed ~40 dB attenuation at 20 kHz. The lower panel resolves the residual low-order harmonics of V_out (H2–H29), all below 0.3% and well under the 5% IEC 61727 voltage THD limit.
+The top panel tells the complete filtering story. Both V_AB (lavender) and V_out (blue) show the fundamental at 50 Hz at the same amplitude (~100% of V₁)  the filter passes the fundamental with near-unity gain. In the low-frequency region (50 Hz to 1 kHz), both spectra are nearly identical (0.06–0.23%) because the filter corner at 1 kHz provides little attenuation below it. The decisive difference is visible at **2·f_sw = 20 kHz**: the V_AB spectrum peaks sharply at H399 = 19 950 Hz (37.6% of V₁, annotated) and H397 = 19 850 Hz (17.9% of V₁)  these are the unipolar SPWM sidebands at 2·f_sw ± n·f_grid that carry the entire 41.75% unfiltered THD. V_out at these same frequencies is attenuated to the noise floor, confirming the LC filter provides its designed ~40 dB attenuation at 20 kHz. The lower panel resolves the residual low-order harmonics of V_out (H2–H29), all below 0.3% and well under the 5% IEC 61727 voltage THD limit.
 
-#### 3.5.5 Bode Plot — Figure 8
-
-<img width="2558" height="1853" alt="fig08_bode_plot" src="https://github.com/user-attachments/assets/4cf6e942-33fd-4a5c-9d5c-588203afeeb2" />
+#### 3.5.5 Bode Plot  Figure 8
+<a id="fig8"></a>
+<img width="2558" height="1853" alt="fig08_bode_plot" src="https://github.com/user-attachments/assets/fd989816-9836-4221-b896-bbeff1530d28" />
 
 > **→ Figure 8: `fig08_bode_plot.png`**
 > *Bode diagram of H(jω) = V_out/V_AB: magnitude (top) and phase (bottom).*
@@ -361,19 +366,19 @@ The top panel tells the complete filtering story. Both V_AB (lavender) and V_out
 **Reading Figure 8:**
 The magnitude plot has three distinct regions. The passband (10 Hz – 1 kHz) is flat at 0 dB: the fundamental at 50 Hz passes with unity gain. The transition at f_c = 1 kHz shows the resonance peak (~+8 dB, consistent with Q = 171), then the characteristic −40 dB/decade 2nd-order slope. At f_sw = 10 kHz the attenuation reads −40 dB exactly, matching the analytical prediction (the sky-blue dotted reference line confirms this). The phase plot is smooth and bounded: −90° at resonance, asymptoting toward −180° at high frequency. The rapid phase transition at f_c is consistent with Q = 171 (very lightly damped; primary damping comes from R_load = 221.7 Ω through the 1/(R_load·C_f) term).
 
-#### 3.5.6 Filter Design Sweep — Figure 9
-
-<img width="2667" height="1451" alt="fig09_thd_vs_capacitance" src="https://github.com/user-attachments/assets/24a2ad9b-e7eb-4b1c-a997-82975c30b508" />
+#### 3.5.6 Filter Design Sweep  Figure 9
+<a id="fig9"></a>
+<img width="2667" height="1451" alt="fig09_thd_vs_capacitance" src="https://github.com/user-attachments/assets/30d6fed8-91a2-4325-8933-bc06e460215e" />
 
 > **→ Figure 9: `fig09_thd_vs_capacitance.png`**
 > *THD vs C_f over one decade, with the chosen design point marked and the 5% compliance limit visible.*
 
 **Reading Figure 9:**
-The sweep reveals a non-monotonic relationship between C_f and THD. For C_f < 0.3 µF the filter corner is above the main SPWM harmonics and filtering is insufficient. At C_f ≈ 1.8 µF a local minimum appears: this is the design point where f_c = 1 kHz aligns optimally with f_sw/10. For C_f > 3 µF the resonance at lower frequencies interacts with SPWM sidebands at intermediate frequencies, causing the ripple structure in the right region. The design choice C_f = 1.82 µF sits at the left edge of the minimum, where THD ≈ 1.02% and component stress is not excessive. The 5% IEC 61727 compliance limit (red dashed) is shown in full — the entire curve falls well below it, demonstrating robustness across a wide capacitance range.
+The sweep reveals a non-monotonic relationship between C_f and THD. For C_f < 0.3 µF the filter corner is above the main SPWM harmonics and filtering is insufficient. At C_f ≈ 1.8 µF a local minimum appears: this is the design point where f_c = 1 kHz aligns optimally with f_sw/10. For C_f > 3 µF the resonance at lower frequencies interacts with SPWM sidebands at intermediate frequencies, causing the ripple structure in the right region. The design choice C_f = 1.82 µF sits at the left edge of the minimum, where THD ≈ 1.02% and component stress is not excessive. The 5% IEC 61727 compliance limit (red dashed) is shown in full  the entire curve falls well below it, demonstrating robustness across a wide capacitance range.
 
-#### 3.5.7 IEEE 1547-2018 Compliance — Figure 10
-
-<img width="3867" height="1468" alt="fig10_ieee1547_compliance" src="https://github.com/user-attachments/assets/1bd21fc5-5c69-44af-a7b1-278faa22f049" />
+#### 3.5.7 IEEE 1547-2018 Compliance  Figure 10
+<a id="fig10"></a>
+<img width="3867" height="1468" alt="fig10_ieee1547_compliance" src="https://github.com/user-attachments/assets/0654b39e-8596-42b4-9bd4-e9c598454a12" />
 
 > **→ Figure 10: `fig10_ieee1547_compliance.png`**
 > *Individual current harmonic magnitudes (blue bars) against IEEE 1547-2018 Table 2 limits (red step function).*
@@ -413,7 +418,8 @@ sim('full_system')       % runs 6-second simulation
 
 The model contains six subsystems wired at the root level. Power flows left-to-right through the conversion chain; the PI feedback loop and PQ measurements branch off as indicated.
 
-<img width="1920" height="991" alt="full_system _ " src="https://github.com/user-attachments/assets/cce3b849-3aa4-4681-9612-19b2d1d4e737" />
+
+<img width="1920" height="991" alt="full_system _ " src="https://github.com/user-attachments/assets/c127fdf9-d344-4529-b811-2fdae5797a64" />
 
 
 > **→ Figure A: `fig_simulink_root.png`**
@@ -424,9 +430,7 @@ Working left to right: the PV block receives G and T constants and outputs Vmpp,
 
 The signal flow is summarised below:
 
-<img width="1400" height="1316" alt="Fig2_Simulink_Root_Level" src="https://github.com/user-attachments/assets/7f088435-ccac-4476-bfba-36e8c5cdb5b2" />
-
-
+<img width="3700" height="3110" alt="02_Simulink_Model_Root-Level_Architecture" src="https://github.com/user-attachments/assets/060e0edd-cae4-4eb9-9810-3d9b9200cf43" />
 
 ### 4.2 Subsystem Block Diagrams
 
@@ -434,9 +438,10 @@ Each subsystem is built programmatically by `build_full_system.m`. The following
 
 #### 4.2.1 Boost Averaged-State Subsystem
 
-<img width="1920" height="991" alt="full_system_BOOST" src="https://github.com/user-attachments/assets/36fb59c5-e475-4c1f-a2a2-e4a85b88648f" />
-<img width="1400" height="774" alt="Fig4_Boost_Subsystem" src="https://github.com/user-attachments/assets/85fa5b62-7a32-480d-aae6-42bafe2d501f" />
 
+<img width="1920" height="991" alt="full_system_BOOST" src="https://github.com/user-attachments/assets/bc987cb8-e127-45a7-a593-68a02e4f1c6a" />
+
+<img width="3700" height="1648" alt="05_2_Boost_Subsystem" src="https://github.com/user-attachments/assets/fadb2f80-a606-49b1-a35b-1afbd4c057b5" />
 
 > **→ Figure B: `fig_simulink_boost.png`**
 > *Internal block diagram of the Boost subsystem: two integrators (IL_int, VC_int) connected via the averaged CCM state equations, with the one_D complement term shared between both ODEs.*
@@ -478,15 +483,17 @@ Phase margin ≈ 165°. Small-signal settling time ≈ 5 / (2π × 1.205) = 0.66
 
 #### 4.2.2 SPWM Subsystem
 
-<img width="1920" height="991" alt="full_system _ SPWM" src="https://github.com/user-attachments/assets/8fb1858c-9ec7-4574-b558-006301d43dfc" />
-<img width="1400" height="721" alt="Fig5_SPWM_Subsystem" src="https://github.com/user-attachments/assets/8ab29a87-873b-4ca2-acbf-5d276b75c8d8" />
+
+<img width="1920" height="991" alt="full_system _ SPWM" src="https://github.com/user-attachments/assets/9daa4c8d-78cc-4ae9-abc7-bc47c353c066" />
+
+<img width="3700" height="1508" alt="06_3_SPWM_Subsystem" src="https://github.com/user-attachments/assets/426a0b45-3dfe-49da-bb2c-5ca698d70c8f" />
 
 
 > **→ Figure C: `fig_simulink_spwm.png`**
 > *Internal block diagram of the SPWM subsystem: sinusoidal reference, triangular carrier, relay comparator, and the two Transport Delay blocks implementing the 2 µs dead-time for each leg.*
 
 **Reading Figure C:**
-The subsystem is self-contained — it has no input ports. A Sine Wave block generates the modulation reference r(t) = Ma·sin(2π·50·t) with Ma = 0.8132. A Repeating Sequence generates the triangular carrier c(t) at f_sw = 10 kHz in the range [−1, +1]. The Sum block computes r(t) − c(t) and feeds a Relay block (thresholds both at 0) whose output Comp_A is binary {0, 1}.
+The subsystem is self-contained  it has no input ports. A Sine Wave block generates the modulation reference r(t) = Ma·sin(2π·50·t) with Ma = 0.8132. A Repeating Sequence generates the triangular carrier c(t) at f_sw = 10 kHz in the range [−1, +1]. The Sum block computes r(t) − c(t) and feeds a Relay block (thresholds both at 0) whose output Comp_A is binary {0, 1}.
 
 Dead-time is implemented as:
 
@@ -501,8 +508,11 @@ Complementing the **raw** Comp_A (not the delayed Sa) and then delaying gives ex
 
 #### 4.2.3 PQ Measurement Subsystem
 
-<img width="1920" height="991" alt="full_system_PQ" src="https://github.com/user-attachments/assets/b1761a70-7d3a-4ca8-8214-44b9d050f6b6" />
-<img width="1400" height="1030" alt="Fig8_PQ_Block_Subsystem" src="https://github.com/user-attachments/assets/8b5bea31-19b7-48c2-a1eb-ee1bead5f4ae" />
+
+<img width="1920" height="991" alt="full_system_PQ" src="https://github.com/user-attachments/assets/2544248d-f11b-49b9-a5a4-98704e4b1f7a" />
+
+<img width="3700" height="2330" alt="09_6_PQ_Block_Subsystem" src="https://github.com/user-attachments/assets/e1025714-e312-4b46-863d-3087012f9e6a" />
+
 
 
 > **→ Figure D: `fig_simulink_pq.png`**
@@ -528,7 +538,7 @@ The BPF is a 2nd-order band-pass at ω₀ = 2π×50 with ζ = 0.707:
 
 > H_BPF(s) = 444.22s / (s² + 444.22s + 98696)
 
-At ω₀, H_BPF(jω₀) = 1+0j exactly, so V_harm contains zero fundamental energy. The numerator is stored as the two-element vector `[444.22 0]` — the trailing zero encodes the s⁰ coefficient, making H(s) = 444.22·s/denom. A scalar `[444.22]` would produce a low-pass filter and was the root cause of the earlier THD = 22,850 % failure.
+At ω₀, H_BPF(jω₀) = 1+0j exactly, so V_harm contains zero fundamental energy. The numerator is stored as the two-element vector `[444.22 0]`  the trailing zero encodes the s⁰ coefficient, making H(s) = 444.22·s/denom. A scalar `[444.22]` would produce a low-pass filter and was the root cause of the earlier THD = 22,850 % failure.
 
 The THD output is multiplied by a Step gate (Before = 0, After = 1, t = 2 s) so that the display reads zero during the transient and only shows the settled value after t = 2 s.
 
@@ -566,7 +576,9 @@ The built-in Scope block is connected to four signals and configured with tight 
 | 3 | Vout | LCfilt/1 | −440 – +440 V | Sky blue |
 | 4 (bottom) | THD | PQ/3 | 0 – 5 % | Green |
 
-<img width="1920" height="991" alt="full_system_scoope" src="https://github.com/user-attachments/assets/ecc47c8a-1513-48e6-a3bd-b30b88ac17ed" />
+
+<img width="1920" height="991" alt="full_system_scoope" src="https://github.com/user-attachments/assets/779c347c-0b0a-4cd7-acdc-ad5e97dc8fdc" />
+
 
 
 > **→ Figure E: `fig_simulink_scope.png`**
@@ -574,16 +586,16 @@ The built-in Scope block is connected to four signals and configured with tight 
 
 **Reading Figure E panel by panel:**
 
-**Panel 1 — Vdc:**
-The gold trace starts at the 400 V IC, overshoots to approximately 600 V within the first 0.1 s, and oscillates at the boost LC resonance frequency f_n = 12.05 Hz before the PI damps it to 400 V by t ≈ 1.5 s. The ~50% overshoot is expected for this lightly damped LC resonance; the observed peak is consistent with the analytical open-loop resonance. After t = 1.5 s the trace is flat at 400.3 V — the 0.3 V (0.075%) residual is a structural load-model offset, not a control error, and is explained in Section 4.5.
+**Panel 1  Vdc:**
+The gold trace starts at the 400 V IC, overshoots to approximately 600 V within the first 0.1 s, and oscillates at the boost LC resonance frequency f_n = 12.05 Hz before the PI damps it to 400 V by t ≈ 1.5 s. The ~50% overshoot is expected for this lightly damped LC resonance; the observed peak is consistent with the analytical open-loop resonance. After t = 1.5 s the trace is flat at 400.3 V  the 0.3 V (0.075%) residual is a structural load-model offset, not a control error, and is explained in Section 4.5.
 
-**Panel 2 — Vrms:**
+**Panel 2  Vrms:**
 The trace rises from 0 and reaches 230 V with a smooth exponential approach, settling by t ≈ 0.5 s (= 5 × τ = 5 × 100 ms). The absence of 100 Hz ripple confirms that τ = 100 ms is sufficient. The trace is completely stable at 230.0 V from t ≈ 1 s onward.
 
-**Panel 3 — Vout instantaneous:**
+**Panel 3  Vout instantaneous:**
 The raw LC filter outputs a ±325 V sinusoid at 50 Hz with 10 kHz SPWM switching texture overlaid. The three-level unipolar SPWM character is visible: the signal dwells at 0 V near zero-crossings of the reference, and reaches ±400 V (the DC bus) during the peak half-cycles. The sinusoidal 50 Hz envelope at ±325 V corresponds to Ma·Vdc = 0.8132 × 400 = 325.3 V peak (230 V RMS). No startup transient is visible because the LC filter integrators start at zero and charge up within a few milliseconds.
 
-**Panel 4 — THD:**
+**Panel 4  THD:**
 The trace is held at zero by the gate until t = 2 s, when the Step block switches to 1 and the measurement activates. The trace then settles immediately to ~1.1%, which is stable and well below the 5% top of the axis (the IEEE 1547-2018 limit). The choice of 0–5% for the Y axis makes compliance visible at a glance: a non-compliant system would produce a trace touching the top of the panel.
 
 ---
@@ -620,7 +632,7 @@ matlab/
 └── build_full_system.m  Builds full_system.slx programmatically
 ```
 
-**Design principle:** Each module can be imported and run independently. `inverter.py __main__` designs the LC filter, constructs InverterParams from those designed values, simulates, and reports using the same parameter set — the design and simulation are always consistent.
+**Design principle:** Each module can be imported and run independently. `inverter.py __main__` designs the LC filter, constructs InverterParams from those designed values, simulates, and reports using the same parameter set  the design and simulation are always consistent.
 
 #### Key class interfaces
 
@@ -690,41 +702,41 @@ Ma = 230*sqrt(2)/400     # = 0.8132 exactly  (NOT 325/400 = 0.8125)
 
 | Figure | File | Section | Role |
 |---|---|---|---|
-| Fig 1 — PV I-V & P-V | `fig01_pv_iv_curves.png` | §3.1.4 | Validates single-diode model, I-V shape, and MPP locus |
-| Fig 2 — MPP locus | `fig02_mpp_locus.png` | §3.1.5 | V_mpp and P_mpp vs G at two temperatures; marks operating point |
-| Fig 3 — MPPT step | `fig03_mppt_step.png` | §3.3.4 | Quantifies P&O oscillation vs InCond stability |
-| Fig 4 — MPPT cloudy | `fig04_mppt_cloudy.png` | §3.3.4 | Shows InCond advantage under fast irradiance changes |
-| Fig 5 — Boost char. | `fig05_boost_characteristics.png` | §3.2.4 | Validates D(V_in), η(V_in), ΔI_L(V_in) curves |
-| Fig 6 — Inverter waveforms | `fig06_inverter_waveforms.png` | §3.4.4 | Shows V_AB, V_out, I_L, I_out, P(t) time domain; 2ms zoom shows 3-level SPWM |
-| Fig 7 — Harmonic spectrum | `fig07_harmonic_spectrum.png` | §3.5.4 | Continuous spectrum shows 2·f_sw cluster and filter attenuation; bar chart shows residual harmonics |
-| Fig 8 — Bode plot | `fig08_bode_plot.png` | §3.5.5 | Confirms −40 dB/decade and f_c = 1 kHz |
-| Fig 9 — THD vs C_f | `fig09_thd_vs_capacitance.png` | §3.5.6 | Demonstrates C_f optimisation with visible 5% compliance limit |
-| Fig 10 — IEEE 1547 | `fig10_ieee1547_compliance.png` | §3.5.7 | Definitive compliance proof with individual harmonic margins |
+| Fig 1  PV I-V & P-V | `fig01_pv_iv_curves.png`#fig1 | §3.1.4 | Validates single-diode model, I-V shape, and MPP locus |
+| Fig 2  MPP locus | `fig02_mpp_locus.png`#fig2 | §3.1.5 | V_mpp and P_mpp vs G at two temperatures; marks operating point |
+| Fig 3  MPPT step | `fig03_mppt_step.png`#fig3 | §3.3.4 | Quantifies P&O oscillation vs InCond stability |
+| Fig 4  MPPT cloudy | `fig04_mppt_cloudy.png`#fig4 | §3.3.4 | Shows InCond advantage under fast irradiance changes |
+| Fig 5  Boost char. | `fig05_boost_characteristics.png`#fig5 | §3.2.4 | Validates D(V_in), η(V_in), ΔI_L(V_in) curves |
+| Fig 6  Inverter waveforms | `fig06_inverter_waveforms.png`#fig6 | §3.4.4 | Shows V_AB, V_out, I_L, I_out, P(t) time domain; 2ms zoom shows 3-level SPWM |
+| Fig 7  Harmonic spectrum | `fig07_harmonic_spectrum.png`#fig7 | §3.5.4 | Continuous spectrum shows 2·f_sw cluster and filter attenuation; bar chart shows residual harmonics |
+| Fig 8  Bode plot | `fig08_bode_plot.png`#fig8 | §3.5.5 | Confirms −40 dB/decade and f_c = 1 kHz |
+| Fig 9  THD vs C_f | `fig09_thd_vs_capacitance.png`#fig9 | §3.5.6 | Demonstrates C_f optimisation with visible 5% compliance limit |
+| Fig 10  IEEE 1547 | `fig10_ieee1547_compliance.png`#fig10 | §3.5.7 | Definitive compliance proof with individual harmonic margins |
 
 ### 6.2 System Performance Summary
 
 | Subsystem | Metric | Python | Simulink | Spec | Status |
 |---|---|---|---|---|---|
-| **PV (STC)** | P_mpp | 250.2 W | — | 250 W ± 1 % | ✓ |
-| **PV (operating)** | P_mpp at T=35°C | 239.7 W | 238.6 W | — | ✓ |
-| **MPPT P&O** | η_overall (step) | 99.86 % | — | > 99 % | ✓ |
-| **MPPT InCond** | η_overall (step) | 99.95 % | — | > 99 % | ✓ |
-| **Boost** | V_out | — | 400.3 V | 400 V ± 1 % | ✓ |
+| **PV (STC)** | P_mpp | 250.2 W |  | 250 W ± 1 % | ✓ |
+| **PV (operating)** | P_mpp at T=35°C | 239.7 W | 238.6 W |  | ✓ |
+| **MPPT P&O** | η_overall (step) | 99.86 % |  | > 99 % | ✓ |
+| **MPPT InCond** | η_overall (step) | 99.95 % |  | > 99 % | ✓ |
+| **Boost** | V_out |  | 400.3 V | 400 V ± 1 % | ✓ |
 | **Boost** | η | 98.2 % | 98.2 % | > 96 % | ✓ |
 | **Boost** | D_ss | 0.9263 | 0.9263 | 1 − V_in/V_out | ✓ |
-| **Boost** | ΔI_L | 0.683 A (8.4 %) | — | ≤ 15 % | ✓ |
+| **Boost** | ΔI_L | 0.683 A (8.4 %) |  | ≤ 15 % | ✓ |
 | **Inverter** | V_rms | 230.45 V† | 230.0 V | 230 V | ✓ |
 | **Inverter** | M_a | 0.8132 | 0.8132 | < 1.0 | ✓ |
 | **Inverter** | P_out | 240.63 W | 238.6 W | ~240 W | ✓ |
 | **Filter** | THD | 1.02 % | 1.08 % | < 5 % (IEEE) | ✓ |
-| **Filter** | Attenuation at f_sw | −40.0 dB | — | ≥ −40 dB | ✓ |
+| **Filter** | Attenuation at f_sw | −40.0 dB |  | ≥ −40 dB | ✓ |
 | **Filter** | f_c | 1000 Hz | 1000 Hz | f_sw/10 | ✓ |
-| **Filter** | L_f | 13.91 mH | — | design | ✓ |
-| **Filter** | C_f | 1.82 µF | — | design | ✓ |
-| **System** | η_chain | — | 98.35 % | > 96 % | ✓ |
+| **Filter** | L_f | 13.91 mH |  | design | ✓ |
+| **Filter** | C_f | 1.82 µF |  | design | ✓ |
+| **System** | η_chain |  | 98.35 % | > 96 % | ✓ |
 | **Compliance** | IEEE 1547-2018 | PASS (4.9×) | PASS (4.6×) | < 5 % THD | ✓✓ |
 
-† 0.45 V (0.20%) above target due to 1 µs SPWM switching-edge quantisation — see §1 note. Within EN 50160 ±1% grid tolerance.
+† 0.45 V (0.20%) above target due to 1 µs SPWM switching-edge quantisation  see §1 note. Within EN 50160 ±1% grid tolerance.
 
 ### 6.3 Energy Conversion Chain Efficiency
 
